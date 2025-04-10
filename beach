@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Placar Beach Tennis</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="placar">
+        <h1>Placar Beach Tennis</h1>
+        
+        <label for="time1">Nome do Time 1: </label>
+        <input type="text" id="time1" placeholder="Time 1">
+        <label for="time2">Nome do Time 2: </label>
+        <input type="text" id="time2" placeholder="Time 2">
+
+        <div class="placarDetalhado">
+            <h3>Placar Atual</h3>
+            <div id="setTime1">0</div>
+            <div id="setTime2">0</div>
+        </div>
+
+        <h3>Placar do Set</h3>
+        <div id="pontosTime1">0</div> - <div id="pontosTime2">0</div>
+
+        <button onclick="registrarPonto('time1')">Adicionar Ponto para Time 1</button>
+        <button onclick="registrarPonto('time2')">Adicionar Ponto para Time 2</button>
+
+        <h3>Histórico de Sets Vencidos</h3>
+        <ul id="historico"></ul>
+        
+        <button onclick="voltar()">Voltar</button>
+    </div>
+
+    <script>
+        let sets = 5; // Número fixo de sets
+        let pontosTime1 = 0;
+        let pontosTime2 = 0;
+        let setTime1 = 0;
+        let setTime2 = 0;
+        const historico = [];
+        const pontos = [15, 30, 40, 60]; // Sistema de pontos
+
+        // Registra ponto para o time selecionado
+        function registrarPonto(time) {
+            if (time === 'time1') {
+                pontosTime1++;
+                document.getElementById('pontosTime1').innerText = pontos[pontosTime1];
+            } else {
+                pontosTime2++;
+                document.getElementById('pontosTime2').innerText = pontos[pontosTime2];
+            }
+
+            verificarSet();
+        }
+
+        // Verifica se algum time venceu o set
+        function verificarSet() {
+            if (pontosTime1 === 3 || pontosTime2 === 3) {
+                let vencedorDoSet = '';
+                if (pontosTime1 >= 4 && pontosTime1 - pontosTime2 >= 2) {
+                    vencedorDoSet = 'time1';
+                } else if (pontosTime2 >= 4 && pontosTime2 - pontosTime1 >= 2) {
+                    vencedorDoSet = 'time2';
+                }
+
+                if (vencedorDoSet) {
+                    if (vencedorDoSet === 'time1') {
+                        setTime1++;
+                        atualizarHistorico('time1');
+                    } else {
+                        setTime2++;
+                        atualizarHistorico('time2');
+                    }
+
+                    resetPlacarSet();
+
+                    // Verifica se algum time venceu 3 sets
+                    if (setTime1 === 3) {
+                        alert(`${document.getElementById('time1').value} venceu a partida!`);
+                        resetPlacarFinal();
+                    } else if (setTime2 === 3) {
+                        alert(`${document.getElementById('time2').value} venceu a partida!`);
+                        resetPlacarFinal();
+                    }
+                }
+            }
+        }
+
+        // Atualiza o histórico de sets vencidos
+        function atualizarHistorico(time) {
+            const historicoElemento = document.createElement('li');
+            if (time === 'time1') {
+                historicoElemento.textContent = `${document.getElementById('time1').value} venceu um set`;
+            } else {
+                historicoElemento.textContent = `${document.getElementById('time2').value} venceu um set`;
+            }
+            historico.push(historicoElemento);
+            document.getElementById('historico').appendChild(historicoElemento);
+        }
+
+        // Reinicia o placar do set
+        function resetPlacarSet() {
+            pontosTime1 = 0;
+            pontosTime2 = 0;
+            document.getElementById('pontosTime1').innerText = pontos[pontosTime1];
+            document.getElementById('pontosTime2').innerText = pontos[pontosTime2];
+        }
+
+        // Reinicia o placar final
+        function resetPlacarFinal() {
+            setTime1 = 0;
+            setTime2 = 0;
+            document.getElementById('setTime1').innerText = setTime1;
+            document.getElementById('setTime2').innerText = setTime2;
+            pontosTime1 = 0;
+            pontosTime2 = 0;
+            document.getElementById('pontosTime1').innerText = pontos[pontosTime1];
+            document.getElementById('pontosTime2').innerText = pontos[pontosTime2];
+            document.getElementById('historico').innerHTML = ''; // Limpa o histórico
+        }
+
+        // Função para voltar à página inicial
+        function voltar() {
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>
