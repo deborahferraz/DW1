@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Placar Vôlei</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="placar">
+        <h1>Placar de Vôlei</h1>
+        <label for="time1">Nome do Time 1: </label>
+        <input type="text" id="time1" placeholder="Time 1">
+        <label for="time2">Nome do Time 2: </label>
+        <input type="text" id="time2" placeholder="Time 2">
+        
+        <div class="sets">
+            <label for="numeroSets">Número de Sets: </label>
+            <select id="numeroSets" onchange="ajustarNumeroSets()">
+                <option value="3">3 Sets</option>
+                <option value="5">5 Sets</option>
+            </select>
+        </div>
+
+        <div class="placarDetalhado">
+            <h3>Placar Atual</h3>
+            <div id="placarTime1">0</div>
+            <div id="placarTime2">0</div>
+        </div>
+
+        <button onclick="registrarPonto('time1')">Adicionar Ponto para Time 1</button>
+        <button onclick="registrarPonto('time2')">Adicionar Ponto para Time 2</button>
+
+        <h3>Histórico de Sets Vencidos</h3>
+        <ul id="historico"></ul>
+        
+        <button onclick="voltar()">Voltar</button>
+    </div>
+    
+    <script>
+        let sets = 3; // Inicializa a quantidade de sets
+        let placarTime1 = 0;
+        let placarTime2 = 0;
+        let setTime1 = 0;
+        let setTime2 = 0;
+        let ultimoSet = false; // Para controlar se é o último set decisivo
+        const historico = [];
+
+        // Ação quando o número de sets é alterado
+        function ajustarNumeroSets() {
+            sets = parseInt(document.getElementById('numeroSets').value);
+            resetPlacar();
+            setTime1 = 0;
+            setTime2 = 0;
+            document.getElementById('placarTime1').innerText = placarTime1;
+            document.getElementById('placarTime2').innerText = placarTime2;
+            historico.length = 0; // Limpa o histórico de sets
+            document.getElementById('historico').innerHTML = '';
+        }
+
+        function registrarPonto(time) {
+            if (time === 'time1') {
+                placarTime1++;
+                document.getElementById('placarTime1').innerText = placarTime1;
+            } else {
+                placarTime2++;
+                document.getElementById('placarTime2').innerText = placarTime2;
+            }
+
+            verificarSet();
+        }
+
+        function verificarSet() {
+            // Verifica se algum time venceu o set
+            let pontosParaVencer = (ultimoSet) ? 15 : 25; // Se for o último set, o limite é 15 pontos
+            let vencedorDoSet = null;
+
+            if (placarTime1 >= pontosParaVencer && placarTime1 - placarTime2 >= 2) {
+                vencedorDoSet = 'time1';
+            } else if (placarTime2 >= pontosParaVencer && placarTime2 - placarTime1 >= 2) {
+                vencedorDoSet = 'time2';
+            }
+
+            if (vencedorDoSet) {
+                // Atualiza o histórico
+                if (vencedorDoSet === 'time1') {
+                    setTime1++;
+                    atualizarHistorico('time1');
+                } else {
+                    setTime2++;
+                    atualizarHistorico('time2');
+                }
+
+                // Reinicia o placar após o set
+                resetPlacar();
+
+                // Verifica se algum time já venceu a quantidade necessária de sets para ganhar a partida
+                const setsParaVencer = Math.ceil(sets / 2); // 3 sets para 5, 2 sets para 3
+                if (setTime1 >= setsParaVencer) {
+                    alert(`${document.getElementById('time1').value} venceu a partida!`);
+                    resetPlacar();
+                } else if (setTime2 >= setsParaVencer) {
+                    alert(`${document.getElementById('time2').value} venceu a partida!`);
+                    resetPlacar();
+                }
+
+                // Verifica se é o último set (decisivo)
+                if (setTime1 + setTime2 === sets - 1) {
+                    ultimoSet = true;
+                }
+            }
+        }
+
+        function atualizarHistorico(time) {
+            const historicoElemento = document.createElement('li');
+            if (time === 'time1') {
+                historicoElemento.textContent = `${document.getElementById('time1').value} venceu um set`;
+            } else {
+                historicoElemento.textContent = `${document.getElementById('time2').value} venceu um set`;
+            }
+            historico.push(historicoElemento);
+            document.getElementById('historico').appendChild(historicoElemento);
+        }
+
+        function resetPlacar() {
+            placarTime1 = 0;
+            placarTime2 = 0;
+            document.getElementById('placarTime1').innerText = placarTime1;
+            document.getElementById('placarTime2').innerText = placarTime2;
+        }
+
+        function voltar() {
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>
